@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {template 'common/edithead'}
+    <!--微擎 -->
+    <!--这个放在最后一切平白安全-->
+    <script type="text/javascript" src="./resource/js/require.js?v=20170915"></script>
+    <style>
+        .type1,.type2,.type3,.apply_code,.fee_type1,.fee_type2{display: none;}
+    </style>
+</head>
+<body class="nav-md" style="min-width: 800px">
+<div>
+    <div class="container xc_edit_from" >
+        <div class="main_container" style="overflow-x: hidden;min-height: calc(100vh - 20px);background-color: white;width: 100%;">
+            <div class="col-md-12 col-xs-12">
+                <div class="x_panel">
+                    {template 'mymanage/webconfig/nav'}
+                    <div class="x_content">
+                        <br/>
+                        <form class="form-horizontal form-label-left input_mask" method="post" action="{php echo $this->createWebUrl($do, array('op'=>'text_save'));}" id="xc_form">
+                            <input type="hidden" name="xkey" value="{$xkey}">
+                            {loop $page $index $item}
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">{$item['name']}</label>
+                            </div>
+                            {loop $item['list'] $index2 $item2}
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">{$item2}</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" name="xc[{$index2}]" value="{$xc[$index2]}" placeholder="{$item2}">
+                                </div>
+                            </div>
+                            {/loop}
+                            {/loop}
+                            <div class="form-group xc_btn_row">
+                                <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-5 col-sm-offset-5  col-md-xs-5 ">
+                                    <button type="button" class="btn btn-primary" id="btsave">确认</button>
+                                    <a type="button" class="btn btn-default"  href="{php echo $this->createWebUrl($do, array('op'=>'edit','xtitleb'=> urlencode($xtitleb),'xtitlea'=>urlencode($xtitlea)));}" >返回</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{template 'common/editfoot'}
+<script>
+    $("#btsave").click(function () {
+        xajaxfrom("#xc_form");
+        return false;
+    });
+    function message(data) {
+        $mesoption = {};
+        if (data["status"] === 1) {
+            if ($('[name="id"]').val() == ""||$('[name="id"]').val() == "0") {
+                xc_form.reset();
+                $(".container").find(".img-thumbnail").attr("src", "./resource/images/nopic.jpg");
+                if( urobj.length>0){
+                    for(var i=0;i<urobj.length;i++){
+                        urobj[i].setContent("");
+                    }
+                }
+            }
+            $mesoption["timer"] = 1000;
+            $mesoption["type"] = replyrdata[data["status"]];
+        }
+        if( typeof(data["title"])=="undefined" )
+        {
+            $mesoption["title"] = data["message"];
+        }
+        else {
+            $mesoption["title"]=data["title"];
+        }
+        $mesoption["text"] = data["message"];
+        swal($mesoption);
+    }
+    function xajaxfrom(form) {
+        $actfrom = $(form);
+        var  $postdate=$actfrom.serialize();
+        xpagecss.xload();
+        $.ajax({
+            type: $(form).attr("method"),
+            url: $(form).attr("action"),
+            dataType: "json",
+            data: $postdate,
+            success: function (res) {
+                if(res.status==1){
+                    swal('操作成功!', '操作成功!', 'success');
+                }else{
+                    swal('操作失败!', '操作失败!', 'error');
+                }
+            }
+        });
+    }
+    function getJson(){
+
+    }
+</script>
+<script>
+    function type(){
+        var index= $('[name="xc[type]"]:checked').val();
+        if(index==1){
+            $(".type1").show();
+            $(".type2").hide();
+            $(".type3").hide();
+        }else if(index==2){
+            $(".type1").show();
+            $(".type2").show();
+            $(".type3").hide();
+        }else if(index==3){
+            $(".type1").show();
+            $(".type2").show();
+            $(".type3").show();
+        }
+    }
+    function apply_code(){
+        if($("input[name='xc[apply_code]']").is(":checked")){
+            $(".apply_code").show();
+        }else{
+            $(".apply_code").hide();
+        }
+    }
+    function print(){
+        var type=$("input[name='xc[code_type]']:checked").val();
+        $(".radiocontents").hide();
+        $(".radiocontents").eq(type-1).show();
+    }
+    function fee_type(){
+        var type= $('[name="xc[fee_type]"]:checked').val();
+        if(type==1){
+            $(".fee_type1").hide();
+            $(".fee_type2").hide();
+        }else if(type==2){
+            $(".fee_type1").show();
+            $(".fee_type2").hide();
+        }else if(type==3){
+            $(".fee_type1").hide();
+            $(".fee_type2").show();
+        }
+    }
+    print();
+    type();
+    apply_code();
+    fee_type();
+    $(function(){
+        $("input[name='xc[type]']").change(function(){
+            type();
+        });
+        $("input[name='xc[apply_code]']").change(function(){
+            apply_code();
+        });
+        $("input[name='xc[code_type]']").change(function(){
+            print();
+        });
+        $("input[name='xc[fee_type]']").change(function(){
+            fee_type();
+        });
+    })
+</script>
+</body>
+</html>

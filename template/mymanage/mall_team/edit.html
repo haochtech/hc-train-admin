@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {template 'common/edithead'}
+    <!--微擎 -->
+    <!--这个放在最后一切平白安全-->
+    <script type="text/javascript" src="./resource/js/require.js?v=20170915"></script>
+    <script type="text/javascript">
+        //编辑器里使用
+        var urobj=[];
+    </script>
+</head>
+<body class="nav-md" style="min-width: 800px">
+<div>
+    <div class="container xc_edit_from" >
+        <div class="main_container" style="overflow-x: hidden;min-height: calc(100vh - 20px);background-color: white;width: 100%;">
+            <div class="col-md-12 col-xs-12">
+                <div class="x_panel">
+                    <ul class="we7-page-tab">
+                        <li >
+                            <a  href="{php echo $this->createWebUrl($do, array('op'=>'list','xtitleb'=>urlencode($xtitleb),'xtitlea'=>urlencode($xtitlea),'new'=>1));}">
+                                {$xtitleb}- {$xtitlea}列表  </a></li>
+                        <li><a href="{php echo $this->createWebUrl($do, array('op'=>'edit','xtitleb'=>urlencode($xtitleb),'xtitlea'=>urlencode($xtitlea),'new'=>1));}">{$xtitleb}- {$xtitlea}增加</a></li>
+                    </ul>
+                    <div class="x_content">
+                        <br/>
+                        <form id="sign-form" class="form-horizontal" role="form" method="post" name="submit">
+                            <input type="hidden" name="id" value="{$list['id']}">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">商品</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <select  class="form-control ajax-select" name="xc[service]" data-select="{$list['service']}" data-url="{php echo $this->createWebUrl($_GPC['do'], array('op'=>'select'));}" data-placeholder="请选择商品">
+                                        <option value="">请选择商品</option>
+                                        {loop $mall $index $item}
+                                        <option value="{$item['id']}" {if $item['id']==$list['service']}selected{/if} >{$item['name']}</option>
+                                        {/loop}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">标题</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="标题" name="xc[name]" value="{$list[name]}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">封面（350*180）</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {php echo tpl_form_field_image('xc[simg]',$list[simg]);}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">图片</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {php echo tpl_form_field_multi_image('xc[bimg]',$list[bimg]);}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">活动时间</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    {php echo tpl_form_field_daterange('times',$list['times'],true);}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">已团</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="已团" name="xc[sold]" value="{$list[sold]}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">库存</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="库存" name="xc[kucun]" value="{$list[kucun]}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">团长佣金</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">消费金额的</button>
+                                        </span>
+                                        <input type="text" class="form-control" name="xc[fee]" value="{$list['fee']}" placeholder="团长佣金">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">%</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">参团优惠</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">参团倍数</button>
+                                        </span>
+                                        <input type="text" class="form-control" name="xc[member_join]" value="{$list['member_join']}" placeholder="参团倍数">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">优惠折扣</button>
+                                        </span>
+                                        <input type="text" class="form-control" name="xc[member_sale]" value="{$list['member_sale']}" placeholder="优惠折扣">
+                                         <span class="input-group-btn">
+                                            <button class="btn btn-default" type="button">折</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">每人限购</label>
+                                <div class="col-md-10 col-sm-9 col-xs-12">
+                                    <input type="text" class="form-control" placeholder="每人限购" name="xc[user_limit]" value="{$list[user_limit]}">
+                                    <span class="help-block">不填不限购</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">状态</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" class="js-switch" value="1" name="xc[status]"
+                                           data-value="{$list['status']}" data-field="status">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">排序</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control"  name="sort" value="{$list['sort']}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-3 col-xs-12">详情</label>
+                                <div class="col-sm-10">
+                                    {php echo tpl_ueditor('xc[content]',$list['content']);}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <input type="button" name="submit" class="btn btn-default" value="提交">
+                                    <a type="button" class="btn btn-default"  href="{php echo $this->createWebUrl($do, array('op'=>'list','xtitleb'=> urlencode($xtitleb),'xtitlea'=>urlencode($xtitlea),'new'=>1));}" >返回</a>
+                                    <input id="res" name="res" type="reset" style="display:none;" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{template 'common/editfoot'}
+<script>
+    //异步slect2
+    $(".ajax-select").each(function () {
+        $(this).select2({
+            language:'zh-CN',
+            ajax: {
+                url: $(this).attr("data-url"),
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    var data={
+                        q: params.term,
+                        page: params.page
+                    };
+                    return data;
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: data.rows,
+                        pagination: {
+                            more: (params.page * 20) < data.total
+                        }
+                    };
+                },
+                cache: true
+            },
+            placeholder:$(this).attr("data-placeholder"),
+            escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+            minimumInputLength: 0,
+            templateResult: formatRepo,
+            templateSelection: formatRepoSelection
+        });
+    });
+    function formatRepo (repo) {
+        if (repo.loading) {
+            return repo.text;
+        }
+        return repo.text;
+    }
+    function formatRepoSelection (repo) {
+        return repo.text || repo.id;
+    }
+    $(function(){
+        $("input[name='submit']").click(function(){
+            var data=$(".form-horizontal").serialize();
+            $.ajax({
+                type:"post",
+                url:"{url 'site/entry/'.$_GPC['do'],array('m'=>$_GPC['m'],'op'=>'savemodel','version_id'=>$_GPC['version_id'])}",
+                data:data,
+                dataType:'json',
+                success:function(res){
+                    if(res.status==1){
+                        if($("input[name='id']").val()==""){
+                            $("input[name='res']").click();
+                            $("body").find(".img-responsive.img-thumbnail").attr("src","");
+                        }
+                        swal('操作成功!', '操作成功!', 'success');
+                    }else{
+                        swal('操作失败!', '操作失败!', 'error');
+                    }
+                }
+            })
+        });
+    });
+</script>
+</body>
+</html>
